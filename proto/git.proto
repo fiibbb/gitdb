@@ -1,0 +1,93 @@
+syntax = "proto3";
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+
+package gitdb;
+
+option go_package = "gitdbpb";
+
+message Object {
+    oneof obj {
+        Blob blob = 2;
+        Tree tree = 3;
+        Commit commit = 4;
+    }
+}
+
+message Blob {
+    string hash = 1;
+    bytes content = 2;
+}
+
+message TreeEntry {
+    // git spec
+    string name = 1;
+    string hash = 2;
+    uint32 mode = 3;
+
+    // sugar
+    Object entry = 4;
+}
+
+message Tree {
+    string hash = 1;
+    repeated TreeEntry entries = 2;
+}
+
+message Signature {
+    string name = 1;
+    string email = 2;
+    int64 time = 3;
+}
+
+message Commit {
+
+    string hash = 1;
+
+    // git spec
+    Signature author = 2;
+    Signature committer = 3;
+    string message = 4;
+    string tree = 5;
+    repeated string parents = 6;
+
+    // sugar
+    Object treeObject = 7;
+    repeated Object parentObjects = 8;
+}
+
+enum ObjectType {
+    NONE = 0;
+    BLOB = 1;
+    TREE = 2;
+    COMMIT = 3;
+}
+
+message ObjectIdentifier {
+    ObjectType type = 1;
+    string ref = 2;
+    string path = 3;
+    int64 time = 4;
+}
+
+message GetObjectRequest {
+    ObjectIdentifier id = 1;
+}
+
+message GetObjectResponse {
+    Object object = 1;
+}
+
+service Git {
+    rpc Health(google.protobuf.Empty) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            get: "/health"
+        };
+    }
+    rpc GetObject(GetObjectRequest) returns (GetObjectResponse) {
+        option (google.api.http) = {
+            get: "/v1/object"
+        };
+    }
+}
