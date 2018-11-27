@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/fiibbb/gitdb/proto"
+	"github.com/fiibbb/gitdb/gitpb"
 	"google.golang.org/grpc"
 	"time"
 )

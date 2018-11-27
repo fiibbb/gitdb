@@ -3,9 +3,9 @@ syntax = "proto3";
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 
-package gitdb;
+package gitpb;
 
-option go_package = "gitdbpb";
+option go_package = "gitpb";
 
 message Object {
     oneof obj {
@@ -65,10 +65,11 @@ enum ObjectType {
 }
 
 message ObjectIdentifier {
-    ObjectType type = 1;
-    string ref = 2;
-    string path = 3;
-    int64 time = 4;
+    string repo = 1;
+    ObjectType type = 2;
+    string ref = 3;
+    string path = 4;
+    int64 time = 5;
 }
 
 message GetObjectRequest {
@@ -77,6 +78,14 @@ message GetObjectRequest {
 
 message GetObjectResponse {
     Object object = 1;
+}
+
+message WriteCommitRequest {
+    map<string, bytes> changes = 1;
+}
+
+message WriteCommitResponse {
+    Commit commit = 1;
 }
 
 service Git {
@@ -88,6 +97,12 @@ service Git {
     rpc GetObject(GetObjectRequest) returns (GetObjectResponse) {
         option (google.api.http) = {
             get: "/v1/object"
+        };
+    }
+    rpc WriteCommit(WriteCommitRequest) returns (WriteCommitResponse) {
+        option (google.api.http) = {
+            put: "/v1/commit"
+            body: "*"
         };
     }
 }

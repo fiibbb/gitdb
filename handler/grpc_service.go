@@ -3,7 +3,7 @@ package handler
 import (
 	"context"
 	"github.com/fiibbb/gitdb/config"
-	"github.com/fiibbb/gitdb/proto"
+	"github.com/fiibbb/gitdb/gitpb"
 	"github.com/golang/protobuf/ptypes/empty"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -45,10 +45,14 @@ func (s *GRPCService) Health(ctx context.Context, req *empty.Empty) (*empty.Empt
 	return &empty.Empty{}, nil
 }
 
-func (s *GRPCService) GetObject(ctx context.Context, req *gitdbpb.GetObjectRequest) (*gitdbpb.GetObjectResponse, error) {
+func (s *GRPCService) WriteCommit(ctx context.Context, req *gitpb.WriteCommitRequest) (*gitpb.WriteCommitResponse, error) {
+	return nil, ErrNYI
+}
+
+func (s *GRPCService) GetObject(ctx context.Context, req *gitpb.GetObjectRequest) (*gitpb.GetObjectResponse, error) {
 	resp, err := s.gitHandler.GetObject(ctx, req.Id)
 	if err != nil {
 		return nil, err
 	}
-	return &gitdbpb.GetObjectResponse{Object: resp}, nil
+	return &gitpb.GetObjectResponse{Object: resp}, nil
 }

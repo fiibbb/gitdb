@@ -25,10 +25,10 @@
 #   unused-packages = true
 
 
+[[constraint]]
+  name = "github.com/grpc-ecosystem/grpc-gateway"
+  branch = "master"
+
 [prune]
   go-tests = true
   unused-packages = true
-
-[[constraint]]
-  name = "gopkg.in/src-d/go-git.v4"
-  version = "4.8.0"
