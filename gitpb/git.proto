@@ -81,7 +81,11 @@ message GetObjectResponse {
 }
 
 message WriteCommitRequest {
-    map<string, bytes> changes = 1;
+    string repo = 1;
+    string ref = 2;
+    map<string, bytes> upserts = 3;
+    repeated string deletes = 4;
+    string msg = 5;
 }
 
 message WriteCommitResponse {

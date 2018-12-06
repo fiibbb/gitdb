@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"github.com/fiibbb/gitdb/config"
+	"github.com/fiibbb/gitdb/consts"
 	"github.com/fiibbb/gitdb/gitpb"
 	"github.com/pkg/errors"
 	"go.uber.org/fx"
@@ -19,7 +20,7 @@ func Serve(cfg *config.AppConfig, g *GRPCService, h *HTTPService, lifecycle fx.L
 			if err != nil {
 				return errors.WithStack(err)
 			}
-			if err := gitpb.RegisterGitHandlerFromEndpoint(context.Background(), h.gatewayMux, cfg.GRPCAddr, []grpc.DialOption{grpc.WithInsecure(), grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(MaxGRPCMessageSize))}); err != nil {
+			if err := gitpb.RegisterGitHandlerFromEndpoint(context.Background(), h.gatewayMux, cfg.GRPCAddr, []grpc.DialOption{grpc.WithInsecure(), grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(consts.MaxGRPCMessageSize))}); err != nil {
 				return errors.WithStack(err)
 			}
 			go g.grpcServer.Serve(lis)

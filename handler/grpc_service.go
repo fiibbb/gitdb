@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"github.com/fiibbb/gitdb/config"
+	"github.com/fiibbb/gitdb/consts"
 	"github.com/fiibbb/gitdb/gitpb"
 	"github.com/golang/protobuf/ptypes/empty"
 	"go.uber.org/zap"
@@ -18,8 +19,8 @@ type GRPCService struct {
 
 func NewGRPCService(cfg *config.AppConfig, gitHandler *GitHandler, logger *zap.Logger) (*GRPCService, error) {
 	grpcServer := grpc.NewServer(
-		grpc.MaxSendMsgSize(MaxGRPCMessageSize),
-		grpc.MaxRecvMsgSize(MaxGRPCMessageSize),
+		grpc.MaxSendMsgSize(consts.MaxGRPCMessageSize),
+		grpc.MaxRecvMsgSize(consts.MaxGRPCMessageSize),
 		grpc.UnaryInterceptor(grpcInterceptor))
 	return &GRPCService{
 		cfg:        cfg,
@@ -46,7 +47,11 @@ func (s *GRPCService) Health(ctx context.Context, req *empty.Empty) (*empty.Empt
 }
 
 func (s *GRPCService) WriteCommit(ctx context.Context, req *gitpb.WriteCommitRequest) (*gitpb.WriteCommitResponse, error) {
-	return nil, ErrNYI
+	resp, err := s.gitHandler.WriteCommit(ctx, req.Repo, req.Ref, req.Upserts, req.Deletes, req.Msg)
+	if err != nil {
+		return nil, err
+	}
+	return &gitpb.WriteCommitResponse{Commit: resp}, consts.ErrNYI
 }
 
 func (s *GRPCService) GetObject(ctx context.Context, req *gitpb.GetObjectRequest) (*gitpb.GetObjectResponse, error) {
